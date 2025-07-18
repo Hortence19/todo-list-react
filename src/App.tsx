@@ -1,40 +1,44 @@
 import { useState } from "react";
 import "./App.css";
 
-function App() {
-  const [tasks, setTasks] = useState([
-    {
-      id: 1,
-      name: " task 1",
-      content: "do your exercice",
-    },
-  ]);
-  const [newTask, setNewTask] = useState("");
+interface Task {
+  id: number;
+  name: string;
+  content: string;
+}
 
-  const AddTask = () => {
-    const newTaskObj = {
-      id: Date.now(),
-      name: `task ${tasks.length + 1}`,
-      content: newTask,
-    };
-    setTasks([...tasks, newTaskObj]);
-    setNewTask("");
+function App() {
+  const [tasks, setTasks] = useState<Task[]>([]);
+
+  const handleForm = (formData: FormData) => {
+    const name = formData.get("name") as string;
+    const content = formData.get("content") as string;
+    const newTask: Task = { id: Date.now(), name, content };
+    addTask(newTask);
+  };
+
+  const addTask = (task: Task) => {
+    setTasks([...tasks, task]);
   };
 
   return (
     <>
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         <form
-          action="#"
-          onSubmit={AddTask}
+          action={handleForm}
           style={{ display: "flex", gap: 10, alignItems: "center" }}
         >
+          <input
+            type="text"
+            name="name"
+            placeholder="Nom de la tache"
+            required
+          />
           <input
             required
             type="text"
             placeholder="Nouvelle tâche"
-            value={newTask}
-            onChange={(e) => setNewTask(e.target.value)}
+            name="content"
           />
           <button type="submit">Ajouter</button>
         </form>
