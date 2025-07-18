@@ -9,40 +9,39 @@ interface Task {
 
 function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [action,setAction] = useState<'create'|'update'>('create');
 
-  const handleForm = (formData: FormData) => {
+  const handleForm = (formData: FormData,task?:Task) => {
     const name = formData.get("name") as string;
     const content = formData.get("content") as string;
-    const newTask: Task = { id: Date.now(), name, content };
-    addTask(newTask);
+    if(action === 'update'){
+      const exitedtask = tasks.find((t) => t.id ===task?.id)
+      if(exitedtask){
+        exitedtask.name = name;
+        exitedtask.content = content;
+        updateTask(exitedtask);
+        setAction('create');
+      }
+    }else {
+      const newTask: Task = { id: Date.now(), name, content };
+      addTask(newTask);
+    }
+
   };
 
   const addTask = (task: Task) => {
     setTasks([...tasks, task]);
   };
 
+  const updateTask = (task: Task) => {
+    const newTasks =  tasks.map((t) => t.id === task.id ? task : t);
+    setTasks(newTasks);
+  }
+
   return (
     <>
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        <form
-          action={handleForm}
-          style={{ display: "flex", gap: 10, alignItems: "center" }}
-        >
-          <input
-            type="text"
-            name="name"
-            placeholder="Nom de la tache"
-            required
-          />
-          <input
-            required
-            type="text"
-            placeholder="Nouvelle tâche"
-            name="content"
-          />
-          <button type="submit">Ajouter</button>
-        </form>
-
+        <TaskForm handleForm={handleForm} />
         <div
           style={{
             display: "flex",
@@ -55,8 +54,11 @@ function App() {
               <h3>{task.name}</h3>
               <p>{task.content}</p>
               <div className="action" style={{ display: "flex", gap: 10 }}>
-                <button>✏️</button>
+                <button onClick={() => {setAction('update')} }>✏️</button>
                 <button>🗑️ </button>
+              </div>
+              <div>
+                {action === 'update' && <TaskForm handleForm={handleForm} task={task}/>}
               </div>
             </div>
           ))}
@@ -64,6 +66,32 @@ function App() {
       </div>
     </>
   );
+}
+
+
+const TaskForm = ({handleForm,task}:{handleForm:(formData:FormData,task?:Task) => void,task?:Task}) => {
+
+
+  return  <form
+      action={(formData) => handleForm(formData,task)}
+      style={{ display: "flex", gap: 10, alignItems: "center" }}
+  >
+    <input
+        type="text"
+        name="name"
+        placeholder="Nom de la tache"
+        required
+        defaultValue={task?.name}
+    />
+    <input
+        required
+        type="text"
+        placeholder="Nouvelle tâche"
+        name="content"
+        defaultValue={task?.content}
+    />
+    <button type="submit"> { !task ? "Ajouter" :"Modifier"} </button>
+  </form>
 }
 
 export default App;
