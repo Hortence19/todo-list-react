@@ -1,6 +1,7 @@
 import { useTodos } from "./hooks/useTodos.tsx";
 import { useFetch } from "./hooks/useFetch.ts";
 import type { ApiResponse, Task, TaskServer } from "./interfaces.ts";
+import { Button } from "./components/button.tsx";
 
 export const Todos = () => {
   const {setAction,handleForm} = useTodos()
@@ -60,6 +61,6 @@ const TaskForm = ({handleForm,task}:{handleForm:(formData:FormData,task?:Task) =
       name="content"
       defaultValue={task?.content}
     />
-    <button type="submit"> { !task ? "Ajouter" :"Modifier"} </button>
+    <Button  type="submit"> { !task ? "Ajouter" :"Modifier"} </Button>
   </form>
 }
