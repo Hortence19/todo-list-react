@@ -9,7 +9,7 @@ export const Posts = () => {
     {error && <div style={{color:'red'}}>{error}</div>}
     {data?.map((post) => (
       <div key={post.id}>
-        <div className='font-bold text-fuchsia-500'> {post.title}</div>
+        <div className='font-bold text-fuchsia-500 text-2xl'> {post.title}</div>
         <p>{post.body}</p>
       </div>))}
   </div>
