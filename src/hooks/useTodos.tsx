@@ -1,35 +1,44 @@
 import { useState } from "react";
-import type { Task } from "../App.tsx";
+import type { ApiResponse, Task, TaskServer } from "../interfaces.ts";
+import { useFetch } from "./useFetch.ts";
 
 export const useTodos = () => {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const {data:response ,isLoading,error} = useFetch<ApiResponse<TaskServer>>("https://todo-api-express-wu7q.onrender.com/api/todos")
+  const tasks = response?.data || []
+ // const [tasks, setTasks] = useState<TaskServer[]>(defaultTasks);
   const [action,setAction] = useState<'create'|'update'>('create');
 
-  const handleForm = (formData: FormData,task?:Task) => {
+  const handleForm = async (formData: FormData,task?:Task) => {
     const name = formData.get("name") as string;
     const content = formData.get("content") as string;
     if(action === 'update'){
-      const exitedtask = tasks.find((t) => t.id ===task?.id)
-      if(exitedtask){
-        exitedtask.name = name;
-        exitedtask.content = content;
-        updateTask(exitedtask);
-        setAction('create');
-      }
+
     }else {
-      const newTask: Task = { id: Date.now(), name, content };
-      addTask(newTask);
+     // const newTask: Task = { id: Date.now(), name, content };
+      try {
+        const task = await fetch('https://todo-api-express-wu7q.onrender.com/api/todos',{
+          method:'POST',
+          body:JSON.stringify({title:name,description:content}),
+          headers:{
+            'Content-type':'application/json'
+          }
+        }).then(res => res.json())
+        console.log(task)
+      }catch (e){
+        console.log(e)
+      }
+
     }
 
   };
 
-  const addTask = (task: Task) => {
-    setTasks([...tasks, task]);
+  const addTask = (task: TaskServer) => {
+    //setTasks([...tasks, task]);
   };
 
-  const updateTask = (task: Task) => {
+  const updateTask = (task: TaskServer) => {
     const newTasks =  tasks.map((t) => t.id === task.id ? task : t);
-    setTasks(newTasks);
+   // setTasks(newTasks);
   }
-  return {tasks,handleForm,setAction,action}
+  return {tasks,handleForm,setAction,action,isLoading,error}
 }

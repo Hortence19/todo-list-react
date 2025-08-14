@@ -4,6 +4,8 @@ export const useFetch = <T>(url:string) => {
   const [data,setData] = useState<T>()
   const [isLoading,setIsLoading] = useState<boolean>(false)
   const [error,setError] = useState<string|null>(null)
+
+
   useEffect(() => {
     async function  fetchData() {
       setIsLoading(true);

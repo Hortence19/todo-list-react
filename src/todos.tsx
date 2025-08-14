@@ -1,12 +1,11 @@
 import { useTodos } from "./hooks/useTodos.tsx";
-import { useFetch } from "./hooks/useFetch.ts";
-import type { ApiResponse, Task, TaskServer } from "./interfaces.ts";
-import { Button } from "./components/button.tsx";
+import type {  Task, TaskServer } from "./interfaces.ts";
+import { Input } from "./components/Input.tsx";
+import { SubmitButton } from "./components/submit-button.tsx";
 
 export const Todos = () => {
-  const {setAction,handleForm} = useTodos()
-  const {data:response ,isLoading,error} = useFetch<ApiResponse<TaskServer>>("https://todo-api-express-wu7q.onrender.com/api/todos")
-  const tasks = response?.data || []
+  const {setAction,handleForm,tasks,isLoading,error} = useTodos()
+
 
   return (
     <>
@@ -21,24 +20,31 @@ export const Todos = () => {
         >
           {isLoading && <div>Loading...</div>}
           {error && <div style={{color:'red'}}>{error}</div>}
-          {tasks?.map((task) => (
-            <div key={task.id} style={{ border: "1px solid", padding: 10 }}>
-              <h3>{task.title}</h3>
-              <p>{task.description}</p>
-              <div className="action" style={{ display: "flex", gap: 10 }}>
-                <button onClick={() => {setAction('update')} }>✏️</button>
-                <button>🗑️ </button>
-              </div>
-             {/* <div>
-                {action === 'update' && <TaskForm handleForm={handleForm} task={task}/>}
-              </div>*/}
-            </div>
-          ))}
+          <div className='grid grid-cols-2 lg:grid-cols-4 gap-4'>
+            {tasks?.map((task) =>
+              <TaskCard task={task} key={task.id} setAction={setAction}/>
+            )}
+          </div>
+
         </div>
       </div>
     </>
   );
 };
+
+const TaskCard = ({task,setAction}:{task:TaskServer,setAction:(action:'update'|'create') => void}) => {
+  return <div key={task.id} className='border border-neutral-700/40 rounded px-4 bg-gray-100 '>
+    <h3>{task.title}</h3>
+    <p>{task.description}</p>
+    <div className="action" style={{ display: "flex", gap: 10 }}>
+      <button onClick={() => {setAction('update')} }>✏️</button>
+      <button>🗑️ </button>
+    </div>
+    {/* <div>
+                {action === 'update' && <TaskForm handleForm={handleForm} task={task}/>}
+              </div>*/}
+  </div>
+}
 
 const TaskForm = ({handleForm,task}:{handleForm:(formData:FormData,task?:Task) => void,task?:Task}) => {
 
@@ -47,20 +53,20 @@ const TaskForm = ({handleForm,task}:{handleForm:(formData:FormData,task?:Task) =
     action={(formData) => handleForm(formData,task)}
     style={{ display: "flex", gap: 10, alignItems: "center" }}
   >
-    <input
+    <Input
       type="text"
       name="name"
       placeholder="Nom de la tache"
       required
       defaultValue={task?.name}
     />
-    <input
+    <Input
       required
       type="text"
       placeholder="Nouvelle tâche"
       name="content"
       defaultValue={task?.content}
     />
-    <Button  type="submit"> { !task ? "Ajouter" :"Modifier"} </Button>
+    <SubmitButton> { !task ? "Ajouter" :"Modifier"} </SubmitButton>
   </form>
 }

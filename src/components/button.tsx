@@ -1,20 +1,16 @@
 import  { type PropsWithChildren } from "react";
 import * as React from "react";
-import { twMerge } from "tailwind-merge";
 import { cva, type VariantProps } from "class-variance-authority";
-import { type ClassValue, clsx } from "clsx";
+import { cn } from "../lib/utils.tsx";
 
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
 
 const buttonVariants = cva(
-  "h-10 flex items-center px-4   rounded text-white",
+  "h-[35px] flex items-center px-4   rounded text-neutral-300 font-bold disabled:opacity-50",
   {
     variants:{
       variant: {
-        primary: "bg-blue-500",
+        primary: "bg-blue-700",
         danger: "bg-red-500",
         outline:"bg-transparent border-1 border-neutral-600"
       },
